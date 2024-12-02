@@ -1,3 +1,368 @@
+-- DROP SCHEMA public;
+
+CREATE SCHEMA public AUTHORIZATION pg_database_owner;
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+-- DROP SEQUENCE public.booking_id_seq;
+
+CREATE SEQUENCE public.booking_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.genre_id_seq;
+
+CREATE SEQUENCE public.genre_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.instrument_type_id_seq;
+
+CREATE SEQUENCE public.instrument_type_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.lease_id_seq;
+
+CREATE SEQUENCE public.lease_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.location_id_seq;
+
+CREATE SEQUENCE public.location_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.person_id_seq;
+
+CREATE SEQUENCE public.person_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.pricing_scheme_id_seq;
+
+CREATE SEQUENCE public.pricing_scheme_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.rentable_instrument_id_seq;
+
+CREATE SEQUENCE public.rentable_instrument_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;
+-- DROP SEQUENCE public.skill_level_id_seq;
+
+CREATE SEQUENCE public.skill_level_id_seq
+	INCREMENT BY 1
+	MINVALUE 1
+	MAXVALUE 2147483647
+	START 1
+	CACHE 1
+	NO CYCLE;-- public.genre definition
+
+-- Drop table
+
+-- DROP TABLE public.genre;
+
+CREATE TABLE public.genre (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	genre varchar(100) NOT NULL,
+	CONSTRAINT pk_genre PRIMARY KEY (id)
+);
+
+
+-- public.instrument_type definition
+
+-- Drop table
+
+-- DROP TABLE public.instrument_type;
+
+CREATE TABLE public.instrument_type (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	"type" varchar(100) NOT NULL,
+	CONSTRAINT pk_instrument_type PRIMARY KEY (id)
+);
+
+
+-- public."location" definition
+
+-- Drop table
+
+-- DROP TABLE public."location";
+
+CREATE TABLE public."location" (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	location_place varchar(100) NULL,
+	CONSTRAINT pk_location PRIMARY KEY (id)
+);
+
+
+-- public.pricing_scheme definition
+
+-- Drop table
+
+-- DROP TABLE public.pricing_scheme;
+
+CREATE TABLE public.pricing_scheme (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	price int4 NOT NULL,
+	wage int4 NOT NULL,
+	sibling_discount int4 NOT NULL,
+	CONSTRAINT pk_pricing_scheme PRIMARY KEY (id)
+);
+
+
+-- public.skill_level definition
+
+-- Drop table
+
+-- DROP TABLE public.skill_level;
+
+CREATE TABLE public.skill_level (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	skill_level varchar(100) NULL,
+	CONSTRAINT pk_skill_level PRIMARY KEY (id)
+);
+
+
+-- public.booking definition
+
+-- Drop table
+
+-- DROP TABLE public.booking;
+
+CREATE TABLE public.booking (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	start_date_time timestamptz NOT NULL,
+	end_date_time timestamptz NOT NULL,
+	location_id int4 NULL,
+	CONSTRAINT pk_booking PRIMARY KEY (id),
+	CONSTRAINT fk_booking_1 FOREIGN KEY (location_id) REFERENCES public."location"(id)
+);
+
+
+-- public.person definition
+
+-- Drop table
+
+-- DROP TABLE public.person;
+
+CREATE TABLE public.person (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	person_number varchar(12) NOT NULL,
+	"name" varchar(100) NOT NULL,
+	address varchar(100) NULL,
+	phone_number varchar(20) NULL,
+	email varchar(100) NULL,
+	sibling_group_id int4 NULL,
+	CONSTRAINT pk_person PRIMARY KEY (id),
+	CONSTRAINT fk_person_0 FOREIGN KEY (sibling_group_id) REFERENCES public.person(id)
+);
+
+
+-- public.rentable_instrument definition
+
+-- Drop table
+
+-- DROP TABLE public.rentable_instrument;
+
+CREATE TABLE public.rentable_instrument (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	brand varchar(100) NULL,
+	model varchar(100) NULL,
+	price int4 NOT NULL,
+	instrument_type_id int4 NOT NULL,
+	CONSTRAINT pk_rentable_instrument PRIMARY KEY (id),
+	CONSTRAINT fk_rentable_instrument_0 FOREIGN KEY (instrument_type_id) REFERENCES public.instrument_type(id)
+);
+
+
+-- public.student definition
+
+-- Drop table
+
+-- DROP TABLE public.student;
+
+CREATE TABLE public.student (
+	person_id int4 NOT NULL,
+	skill_level_id int4 NOT NULL,
+	CONSTRAINT pk_student PRIMARY KEY (person_id),
+	CONSTRAINT fk_student_0 FOREIGN KEY (person_id) REFERENCES public.person(id),
+	CONSTRAINT fk_student_1 FOREIGN KEY (skill_level_id) REFERENCES public.skill_level(id)
+);
+
+
+-- public.student_instruments definition
+
+-- Drop table
+
+-- DROP TABLE public.student_instruments;
+
+CREATE TABLE public.student_instruments (
+	instrument_type_id int4 NOT NULL,
+	person_id int4 NOT NULL,
+	CONSTRAINT pk_student_instruments PRIMARY KEY (instrument_type_id, person_id),
+	CONSTRAINT fk_student_instruments_0 FOREIGN KEY (instrument_type_id) REFERENCES public.instrument_type(id),
+	CONSTRAINT fk_student_instruments_1 FOREIGN KEY (person_id) REFERENCES public.student(person_id)
+);
+
+
+-- public.contact_person definition
+
+-- Drop table
+
+-- DROP TABLE public.contact_person;
+
+CREATE TABLE public.contact_person (
+	person_id int4 NOT NULL,
+	contact_id int4 NOT NULL,
+	CONSTRAINT pk_contact_persons PRIMARY KEY (person_id, contact_id),
+	CONSTRAINT fk_contact_persons_0 FOREIGN KEY (person_id) REFERENCES public.person(id),
+	CONSTRAINT fk_contact_persons_1 FOREIGN KEY (contact_id) REFERENCES public.person(id)
+);
+
+
+-- public.instructor definition
+
+-- Drop table
+
+-- DROP TABLE public.instructor;
+
+CREATE TABLE public.instructor (
+	person_id int4 NOT NULL,
+	CONSTRAINT pk_instructor PRIMARY KEY (person_id),
+	CONSTRAINT fk_instructor_0 FOREIGN KEY (person_id) REFERENCES public.person(id)
+);
+
+
+-- public.instructor_available_times definition
+
+-- Drop table
+
+-- DROP TABLE public.instructor_available_times;
+
+CREATE TABLE public.instructor_available_times (
+	person_id int4 NOT NULL,
+	start_date_time timestamptz NOT NULL,
+	end_date_time timestamptz NOT NULL,
+	instrument_type_id int4 NULL,
+	skill_level_id int4 NULL,
+	id int4 GENERATED ALWAYS AS IDENTITY NOT NULL,
+	CONSTRAINT instructor_available_times_pk PRIMARY KEY (id),
+	CONSTRAINT fk_instructor_available_times_0 FOREIGN KEY (person_id) REFERENCES public.instructor(person_id),
+	CONSTRAINT fk_instructor_available_times_1 FOREIGN KEY (instrument_type_id) REFERENCES public.instrument_type(id),
+	CONSTRAINT fk_instructor_available_times_2 FOREIGN KEY (skill_level_id) REFERENCES public.skill_level(id)
+);
+
+
+-- public.lease definition
+
+-- Drop table
+
+-- DROP TABLE public.lease;
+
+CREATE TABLE public.lease (
+	id int4 GENERATED ALWAYS AS IDENTITY( INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START 1 CACHE 1 NO CYCLE) NOT NULL,
+	start_time timestamptz NOT NULL,
+	end_time timestamptz NULL,
+	rentable_instrument_id int4 NOT NULL,
+	person_id int4 NOT NULL,
+	CONSTRAINT pk_lease PRIMARY KEY (id),
+	CONSTRAINT fk_lease_0 FOREIGN KEY (rentable_instrument_id) REFERENCES public.rentable_instrument(id),
+	CONSTRAINT fk_lease_1 FOREIGN KEY (person_id) REFERENCES public.student(person_id)
+);
+
+
+-- public.lesson definition
+
+-- Drop table
+
+-- DROP TABLE public.lesson;
+
+CREATE TABLE public.lesson (
+	min int4 NULL,
+	max int4 NULL,
+	pricing_scheme_id int4 NOT NULL,
+	person_id int4 NULL,
+	booking_id int4 NOT NULL,
+	CONSTRAINT lesson_pk PRIMARY KEY (booking_id),
+	CONSTRAINT fk_lesson_0 FOREIGN KEY (pricing_scheme_id) REFERENCES public.pricing_scheme(id),
+	CONSTRAINT fk_lesson_1 FOREIGN KEY (person_id) REFERENCES public.instructor(person_id),
+	CONSTRAINT lesson_booking_fk FOREIGN KEY (booking_id) REFERENCES public.booking(id)
+);
+
+
+-- public.enrollment definition
+
+-- Drop table
+
+-- DROP TABLE public.enrollment;
+
+CREATE TABLE public.enrollment (
+	lesson_id int4 NOT NULL,
+	person_id int4 NOT NULL,
+	CONSTRAINT pk_enrollment PRIMARY KEY (lesson_id, person_id),
+	CONSTRAINT fk_enrollment_0 FOREIGN KEY (lesson_id) REFERENCES public.lesson(booking_id),
+	CONSTRAINT fk_enrollment_1 FOREIGN KEY (person_id) REFERENCES public.student(person_id)
+);
+
+
+-- public.ensemble definition
+
+-- Drop table
+
+-- DROP TABLE public.ensemble;
+
+CREATE TABLE public.ensemble (
+	lesson_id int4 NOT NULL,
+	genre_id int4 NULL,
+	CONSTRAINT pk_ensamble PRIMARY KEY (lesson_id),
+	CONSTRAINT fk_ensamble_0 FOREIGN KEY (lesson_id) REFERENCES public.lesson(booking_id),
+	CONSTRAINT fk_ensamble_1 FOREIGN KEY (genre_id) REFERENCES public.genre(id)
+);
+
+
+-- public.instrument_lesson definition
+
+-- Drop table
+
+-- DROP TABLE public.instrument_lesson;
+
+CREATE TABLE public.instrument_lesson (
+	lesson_id int4 NOT NULL,
+	skill_level_id int4 NOT NULL,
+	instrument_type_id int4 NOT NULL,
+	CONSTRAINT pk_instrument_lesson PRIMARY KEY (lesson_id),
+	CONSTRAINT fk_instrument_lesson_0 FOREIGN KEY (lesson_id) REFERENCES public.lesson(booking_id),
+	CONSTRAINT fk_instrument_lesson_1 FOREIGN KEY (skill_level_id) REFERENCES public.skill_level(id),
+	CONSTRAINT fk_instrument_lesson_2 FOREIGN KEY (instrument_type_id) REFERENCES public.instrument_type(id)
+);
 INSERT INTO public.person (person_number,"name",address,phone_number,email,sibling_group_id) VALUES
 	('356164407167','Dieter Hewitt','Ap #949-5346 Tempus, Av.','+4675911268','torquent.per.conubia@yahoo.org',1);
 INSERT INTO public.person (person_number,"name",address,phone_number,email,sibling_group_id) VALUES
@@ -398,3 +763,819 @@ INSERT INTO public.person (person_number,"name",address,phone_number,email,sibli
 	('680618643278','Stephanie Floyd','Ap #706-6117 Odio. Rd.','+4612231824','sed.pede@hotmail.edu',199);
 INSERT INTO public.person (person_number,"name",address,phone_number,email,sibling_group_id) VALUES
 	('460451929748','Elvis Carrillo','6597 Sollicitudin Rd.','+4635775086','mauris.molestie@hotmail.org',200);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (140,187),
+	 (170,115),
+	 (34,191),
+	 (31,20),
+	 (186,46),
+	 (81,98),
+	 (86,95),
+	 (116,128),
+	 (114,121),
+	 (109,85);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (130,189),
+	 (6,115),
+	 (84,23),
+	 (127,156),
+	 (33,70),
+	 (56,125),
+	 (138,65),
+	 (15,36),
+	 (117,86),
+	 (3,143);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (30,53),
+	 (102,91),
+	 (165,8),
+	 (7,81),
+	 (90,59),
+	 (111,188),
+	 (80,64),
+	 (90,184),
+	 (182,84),
+	 (9,159);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (110,150),
+	 (164,163),
+	 (55,46),
+	 (123,115),
+	 (105,19),
+	 (123,77),
+	 (129,107),
+	 (174,169),
+	 (85,29),
+	 (39,136);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (151,76),
+	 (187,187),
+	 (165,29),
+	 (77,159),
+	 (109,63),
+	 (197,42),
+	 (190,19),
+	 (73,145),
+	 (27,140),
+	 (142,199);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (84,15),
+	 (3,3),
+	 (126,76),
+	 (38,28),
+	 (86,34),
+	 (91,31),
+	 (139,161),
+	 (110,40),
+	 (141,182),
+	 (30,185);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (141,146),
+	 (159,23),
+	 (195,78),
+	 (129,85),
+	 (158,147),
+	 (177,153),
+	 (26,107),
+	 (155,135),
+	 (71,200),
+	 (5,59);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (7,105),
+	 (25,82),
+	 (57,107),
+	 (3,125),
+	 (122,185),
+	 (74,61),
+	 (118,55),
+	 (191,122),
+	 (45,49),
+	 (97,60);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (68,154),
+	 (146,3),
+	 (109,185),
+	 (10,134),
+	 (76,64),
+	 (4,12),
+	 (41,18),
+	 (54,178),
+	 (100,41),
+	 (49,97);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (176,83),
+	 (151,14),
+	 (22,179),
+	 (17,9),
+	 (171,91),
+	 (5,23),
+	 (107,88),
+	 (161,168),
+	 (183,107),
+	 (90,85);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (137,32),
+	 (51,3),
+	 (60,112),
+	 (172,30),
+	 (187,15),
+	 (46,2),
+	 (127,6),
+	 (167,41),
+	 (153,4),
+	 (83,69);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (92,160),
+	 (145,36),
+	 (130,57),
+	 (17,64),
+	 (92,65),
+	 (133,156),
+	 (167,35),
+	 (48,50),
+	 (97,151),
+	 (172,42);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (50,86),
+	 (157,183),
+	 (142,121),
+	 (6,116),
+	 (21,185),
+	 (33,135),
+	 (120,84),
+	 (15,118),
+	 (59,90),
+	 (20,22);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (118,23),
+	 (85,89),
+	 (105,18),
+	 (45,164),
+	 (22,103),
+	 (87,60),
+	 (159,190),
+	 (88,45),
+	 (81,174),
+	 (91,84);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (52,104),
+	 (85,42),
+	 (125,146),
+	 (95,59),
+	 (27,39),
+	 (113,111),
+	 (102,13),
+	 (171,60),
+	 (189,194),
+	 (11,98);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (173,57),
+	 (55,12),
+	 (30,61),
+	 (53,148),
+	 (108,158),
+	 (161,44),
+	 (187,80),
+	 (118,173),
+	 (61,198),
+	 (199,44);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (195,54),
+	 (182,70),
+	 (166,36),
+	 (123,118),
+	 (96,7),
+	 (134,112),
+	 (127,104),
+	 (44,131),
+	 (11,172),
+	 (99,197);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (153,34),
+	 (19,110),
+	 (72,47),
+	 (3,9),
+	 (76,165),
+	 (124,4),
+	 (140,35),
+	 (68,62),
+	 (156,95),
+	 (159,101);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (57,30),
+	 (78,29),
+	 (167,2),
+	 (2,110),
+	 (152,96),
+	 (16,70),
+	 (167,128),
+	 (54,23),
+	 (50,137),
+	 (75,117);
+INSERT INTO public.contact_person (person_id,contact_id) VALUES
+	 (127,133),
+	 (88,70),
+	 (44,110),
+	 (27,95),
+	 (62,9),
+	 (133,69),
+	 (94,18),
+	 (110,199),
+	 (12,24),
+	 (123,123);
+INSERT INTO public.genre (genre) VALUES
+	 ('Classical'),
+	 ('Jazz'),
+	 ('Funk'),
+	 ('Rock');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Afoxé'),
+	 ('Agogô'),
+	 ('Agung'),
+	 ('Angklung'),
+	 ('Babendil'),
+	 ('Bak'),
+	 ('Balafon'),
+	 ('Batá drum'),
+	 ('Cabasa'),
+	 ('Cajón');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Carillon'),
+	 ('Castanets (Palillos)'),
+	 ('Caxirola'),
+	 ('Caxixi'),
+	 ('Chácaras'),
+	 ('Clapstick'),
+	 ('Claves'),
+	 ('Cowbell'),
+	 ('Crotales'),
+	 ('Cymbal');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Ferrinho'),
+	 ('Flexatone'),
+	 ('Octa-Vibraphone'),
+	 ('Gandingan'),
+	 ('Ghatam'),
+	 ('Glockenspiel'),
+	 ('Gong'),
+	 ('Güiro'),
+	 ('Handbells'),
+	 ('Handpan');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Hang'),
+	 ('Kalimba'),
+	 ('Kayamb (Kayamba)'),
+	 ('Kemanak'),
+	 ('Khartal'),
+	 ('Kouxian'),
+	 ('Kulintang'),
+	 ('Maraca'),
+	 ('Marimba'),
+	 ('Mbira');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Pate'),
+	 ('Qairaq (Kairak)'),
+	 ('Shekere'),
+	 ('Slit drum'),
+	 ('Spoon'),
+	 ('Steelpan'),
+	 ('Tambourine'),
+	 ('Teponaztli'),
+	 ('Triangle'),
+	 ('Trash Tube');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Txalaparta'),
+	 ('Vibraphone'),
+	 ('Vibraslap'),
+	 ('Washboard'),
+	 ('Wood block'),
+	 ('Wooden fish'),
+	 ('Xylophone'),
+	 ('Zill'),
+	 ('Sandpaper blocks'),
+	 ('Ekwe');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Agida'),
+	 ('Alfaia'),
+	 ('Apinti'),
+	 ('Arobapá'),
+	 ('Ashiko'),
+	 ('Atabaque'),
+	 ('Baboula'),
+	 ('Balaban (drum)'),
+	 ('Balsié'),
+	 ('Bamboula');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Bara'),
+	 ('Barrel drum'),
+	 ('"Barriles'),
+	 ('buleador'),
+	 ('primo'),
+	 ('repicador'),
+	 ('subidor"'),
+	 ('Bass drum'),
+	 ('Bedug'),
+	 ('Bodhrán');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Bongo drums'),
+	 ('Boobam'),
+	 ('"Candombe'),
+	 ('chico'),
+	 ('repique'),
+	 ('piano"'),
+	 ('"Chenda (Chande)'),
+	 ('Uruttu chenda'),
+	 ('Veekku chenda'),
+	 ('Acchan chenda"');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('"Conga  (Tumbadora)'),
+	 ('ricardo  (smallest)'),
+	 ('requinto'),
+	 ('quinto'),
+	 ('conga'),
+	 ('tumba'),
+	 ('supertumba (largest)"'),
+	 ('Cuíca'),
+	 ('Culo''e puya'),
+	 ('Cultrun');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Dabakan'),
+	 ('Daf (Dap'),
+	 ('Damaru'),
+	 ('Davul (dhol'),
+	 ('Dayereh'),
+	 ('Den-den daiko'),
+	 ('Dhak'),
+	 ('Dhimay (Dhimaya)'),
+	 ('Dhol'),
+	 ('Dholak (Dholaki)');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Dimdi'),
+	 ('Djembe'),
+	 ('Dollu'),
+	 ('Drum kit'),
+	 ('Dunun  (Dundun)'),
+	 ('Gran Cassa'),
+	 ('Goblet drum'),
+	 ('Gong bass drum'),
+	 ('Hira-daiko'),
+	 ('Idakka');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Ilimba drum'),
+	 ('Ingoma'),
+	 ('Shakwe'),
+	 ('Inyahura'),
+	 ('Igihumurizo"'),
+	 ('Janggu (Janggo)'),
+	 ('Junjung'),
+	 ('Kakko'),
+	 ('Kanjira'),
+	 ('Kebero');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Kendang (Gendang)'),
+	 ('Khol (Mrdanga)'),
+	 ('Krakebs'),
+	 ('Lambeg drum'),
+	 ('Madhalam'),
+	 ('Madal'),
+	 ('Maddale'),
+	 ('"Maktoum (maktoom)'),
+	 ('Maram'),
+	 ('Mirwas');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Mridangam'),
+	 ('Nagara (drum)'),
+	 ('Naqareh'),
+	 ('Ney (flute)'),
+	 ('O-daiko'),
+	 ('Okedo-daiko'),
+	 ('Octaban'),
+	 ('Padayani thappu'),
+	 ('Pakhavaj'),
+	 ('Pandeiro');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Pandero'),
+	 ('Parai'),
+	 ('Qilaut'),
+	 ('Rebana'),
+	 ('Sabar'),
+	 ('Sambal'),
+	 ('Samphor'),
+	 ('Shime-daiko'),
+	 ('Snare drum'),
+	 ('Surdo');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Tabla'),
+	 ('Taiko'),
+	 ('Talking drum'),
+	 ('Tsukeshime-daiko'),
+	 ('Tambor huacana'),
+	 ('Tambori'),
+	 ('Tamborim'),
+	 ('Tamborita calentana (Mexico)'),
+	 ('Tambou bas a dé fas'),
+	 ('Tambou bas a yon fas');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Tan-tan'),
+	 ('Taphon'),
+	 ('Tar'),
+	 ('Tbilat'),
+	 ('Thavil'),
+	 ('Timbales (Pailas)'),
+	 ('Timpani (kettledrum)'),
+	 ('Tom-tom drum'),
+	 ('Tombak'),
+	 ('Tsuzumi');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Tsuri-daiko'),
+	 ('unpitched repique'),
+	 ('Uchiwa-daiko'),
+	 ('Celesta'),
+	 ('Crystallophone'),
+	 ('Glasschord'),
+	 ('Glass harmonica'),
+	 ('Hydraulophone'),
+	 ('Plasmaphone'),
+	 ('Pyrophone');
+INSERT INTO public.instrument_type ("type") VALUES
+	 ('Quintephone'),
+	 ('"Asadullah (Meerut'),
+	 ('Shishi odoshi (Japan)'),
+	 ('Suikinkutsu (Japanese water zither)'),
+	 ('Wobble board (Australia)');
+INSERT INTO public."location" (location_place) VALUES
+	 ('Ka-388'),
+	 ('Ka-385'),
+	 ('Ka-348'),
+	 ('Ka-384'),
+	 ('Ka-328'),
+	 ('Ka-359'),
+	 ('Ka-349'),
+	 ('Ka-373'),
+	 ('Ka-353'),
+	 ('Ka-364');
+INSERT INTO public."location" (location_place) VALUES
+	 ('Ka-388'),
+	 ('Ka-385'),
+	 ('Ka-348'),
+	 ('Ka-384'),
+	 ('Ka-328'),
+	 ('Ka-359'),
+	 ('Ka-349'),
+	 ('Ka-373'),
+	 ('Ka-353'),
+	 ('Ka-364');
+INSERT INTO public."location" (location_place) VALUES
+	 ('Ka-388'),
+	 ('Ka-385'),
+	 ('Ka-348'),
+	 ('Ka-384'),
+	 ('Ka-328'),
+	 ('Ka-359'),
+	 ('Ka-349'),
+	 ('Ka-373'),
+	 ('Ka-353'),
+	 ('Ka-364');
+INSERT INTO public."location" (location_place) VALUES
+	 ('Ka-372'),
+	 ('Ka-353'),
+	 ('Ka-318'),
+	 ('Ka-318'),
+	 ('Ka-315'),
+	 ('Ka-361'),
+	 ('Ka-335'),
+	 ('Ka-356'),
+	 ('Ka-357'),
+	 ('Ka-347');
+INSERT INTO public.pricing_scheme (price,wage,sibling_discount) VALUES
+	 (200,180,20),
+	 (400,380,10);
+INSERT INTO public.skill_level (skill_level) VALUES
+	 ('Chomp'),
+	 ('Beginner'),
+	 ('Intermediate'),
+	 ('Advanced'),
+	 ('LITERALLY GOD');
+INSERT INTO public.instructor (person_id) VALUES
+	 (11),
+	 (12),
+	 (19),
+	 (81);
+INSERT INTO public.instructor_available_times (person_id,start_date_time,end_date_time,instrument_type_id,skill_level_id) VALUES
+	 (12,'2025-09-22 00:00:00+02','2025-09-22 01:00:00+02',191,3),
+	 (12,'2025-10-15 00:00:00+02','2025-10-15 01:00:00+02',79,2),
+	 (81,'2024-12-17 00:00:00+01','2024-12-17 01:00:00+01',184,5),
+	 (12,'2025-08-13 00:00:00+02','2025-08-13 01:00:00+02',116,4),
+	 (19,'2024-06-08 00:00:00+02','2024-06-08 01:00:00+02',16,5),
+	 (11,'2025-03-01 00:00:00+01','2025-03-01 01:00:00+01',190,5),
+	 (81,'2025-05-04 00:00:00+02','2025-05-04 01:00:00+02',109,5),
+	 (11,'2024-06-08 00:00:00+02','2024-06-08 01:00:00+02',59,5),
+	 (19,'2025-11-09 00:00:00+01','2025-11-09 01:00:00+01',130,1),
+	 (19,'2024-11-14 00:00:00+01','2024-11-14 01:00:00+01',190,3);
+INSERT INTO public.instructor_available_times (person_id,start_date_time,end_date_time,instrument_type_id,skill_level_id) VALUES
+	 (11,'2023-12-02 00:00:00+01','2023-12-02 01:00:00+01',45,4),
+	 (12,'2024-07-23 00:00:00+02','2024-07-23 01:00:00+02',118,5),
+	 (81,'2025-10-22 00:00:00+02','2025-10-22 01:00:00+02',144,5),
+	 (19,'2025-05-28 00:00:00+02','2025-05-28 01:00:00+02',139,2),
+	 (12,'2025-06-07 00:00:00+02','2025-06-07 01:00:00+02',71,3),
+	 (11,'2024-08-02 00:00:00+02','2024-08-02 01:00:00+02',166,2),
+	 (81,'2024-11-10 00:00:00+01','2024-11-10 01:00:00+01',163,2),
+	 (12,'2024-03-05 00:00:00+01','2024-03-05 01:00:00+01',52,5),
+	 (19,'2025-08-08 00:00:00+02','2025-08-08 01:00:00+02',104,2),
+	 (19,'2025-04-18 00:00:00+02','2025-04-18 01:00:00+02',17,5);
+INSERT INTO public.instructor_available_times (person_id,start_date_time,end_date_time,instrument_type_id,skill_level_id) VALUES
+	 (19,'2024-08-18 00:00:00+02','2024-08-18 01:00:00+02',NULL,NULL),
+	 (81,'2025-10-13 00:00:00+02','2025-10-13 01:00:00+02',NULL,NULL),
+	 (11,'2024-08-10 00:00:00+02','2024-08-10 01:00:00+02',NULL,NULL),
+	 (81,'2025-08-03 00:00:00+02','2025-08-03 01:00:00+02',NULL,NULL),
+	 (12,'2024-02-17 00:00:00+01','2024-02-17 01:00:00+01',NULL,NULL),
+	 (81,'2024-06-28 00:00:00+02','2024-06-28 01:00:00+02',NULL,NULL),
+	 (19,'2025-11-15 00:00:00+01','2025-11-15 01:00:00+01',NULL,NULL),
+	 (81,'2024-09-26 00:00:00+02','2024-09-26 01:00:00+02',NULL,NULL),
+	 (19,'2024-12-16 00:00:00+01','2024-12-16 01:00:00+01',NULL,NULL),
+	 (11,'2024-03-03 00:00:00+01','2024-03-03 01:00:00+01',NULL,NULL);
+INSERT INTO public.student (person_id,skill_level_id) VALUES
+	 (56,3),
+	 (180,1),
+	 (138,4),
+	 (37,3),
+	 (108,2),
+	 (53,1),
+	 (6,5),
+	 (14,2),
+	 (188,2),
+	 (161,4);
+INSERT INTO public.student (person_id,skill_level_id) VALUES
+	 (65,2),
+	 (192,4),
+	 (47,3),
+	 (173,3),
+	 (88,4),
+	 (20,3),
+	 (26,3),
+	 (49,4),
+	 (186,4),
+	 (79,5);
+INSERT INTO public.student (person_id,skill_level_id) VALUES
+	 (162,5),
+	 (50,1),
+	 (75,5),
+	 (54,5),
+	 (139,4),
+	 (163,2),
+	 (93,5),
+	 (119,2),
+	 (3,5),
+	 (76,2);
+INSERT INTO public.student_instruments (instrument_type_id,person_id) VALUES
+	 (166,53),
+	 (184,3),
+	 (35,6),
+	 (137,14),
+	 (29,20),
+	 (44,26),
+	 (111,37),
+	 (5,47),
+	 (189,49),
+	 (148,50);
+INSERT INTO public.student_instruments (instrument_type_id,person_id) VALUES
+	 (160,54),
+	 (80,56),
+	 (193,65),
+	 (174,75),
+	 (166,76),
+	 (175,79),
+	 (127,88),
+	 (110,93),
+	 (74,108),
+	 (7,119);
+INSERT INTO public.student_instruments (instrument_type_id,person_id) VALUES
+	 (2,138),
+	 (77,139),
+	 (148,161),
+	 (26,162),
+	 (193,163),
+	 (161,173),
+	 (67,180),
+	 (30,186),
+	 (100,188),
+	 (5,192);
+INSERT INTO public.rentable_instrument (brand,model,price,instrument_type_id) VALUES
+	 ('Ullamcorper Duis PC','est mauris,',263,144),
+	 ('Amet Ante LLC','convallis erat,',323,30),
+	 ('Arcu Sed Foundation','vitae, posuere',256,87),
+	 ('Vivamus Nisi Inc.','Nunc lectus',387,113),
+	 ('Sodales Associates','egestas. Aliquam',484,8),
+	 ('Eu Augue Institute','luctus ut,',394,67),
+	 ('Nonummy Ultricies Associates','tincidunt nibh.',404,181),
+	 ('Sed Auctor LLP','consectetuer adipiscing',325,112),
+	 ('Velit Corporation','Fusce mi',219,60),
+	 ('Non Corporation','odio a',399,39);
+INSERT INTO public.rentable_instrument (brand,model,price,instrument_type_id) VALUES
+	 ('Ac LLP','ac turpis',161,107),
+	 ('Nisl Nulla Corp.','iaculis nec,',253,60),
+	 ('Et Magnis Dis Corp.','at risus.',418,22),
+	 ('Diam At Corporation','Donec tempor,',438,117),
+	 ('Egestas Sed LLC','sed sem',385,11),
+	 ('Mollis Integer LLC','vitae purus',324,186),
+	 ('Ipsum Porta Company','lectus, a',354,104),
+	 ('Nascetur Ridiculus Mus Inc.','Donec tincidunt.',465,98),
+	 ('Pede LLP','amet luctus',261,47),
+	 ('Vestibulum Nec LLP','fringilla euismod',173,110);
+INSERT INTO public.rentable_instrument (brand,model,price,instrument_type_id) VALUES
+	 ('Aliquet Vel Corp.','felis, adipiscing',318,90),
+	 ('Nascetur Ridiculus LLC','non enim',322,125),
+	 ('Dapibus Rutrum Justo Inc.','amet risus.',456,138),
+	 ('Leo Vivamus Nibh LLP','lectus. Nullam',222,92),
+	 ('Libero Proin Foundation','orci. Ut',285,132),
+	 ('Consectetuer Adipiscing PC','augue ut',441,164),
+	 ('Eu Tellus Phasellus Ltd','in consequat',267,90),
+	 ('Ullamcorper Velit Company','pede. Suspendisse',412,82),
+	 ('Et Magnis Corporation','Proin nisl',374,165),
+	 ('Cras PC','et malesuada',461,178);
+INSERT INTO public.rentable_instrument (brand,model,price,instrument_type_id) VALUES
+	 ('Diam Corporation','ligula tortor,',497,49),
+	 ('Per Inceptos Hymenaeos PC','lectus convallis',236,76),
+	 ('Non Foundation','Aenean eget',319,64),
+	 ('Nibh Aliquam Consulting','erat. Vivamus',371,24),
+	 ('Tristique Pharetra Corp.','leo. Vivamus',228,191),
+	 ('Magna Et Consulting','malesuada ut,',198,26),
+	 ('Sapien Nunc Ltd','luctus et',497,187),
+	 ('Sem Vitae Aliquam Corporation','fermentum arcu.',368,162),
+	 ('Enim Mi Tempor Inc.','primis in',325,95),
+	 ('Mauris Non LLC','auctor non,',286,71);
+INSERT INTO public.rentable_instrument (brand,model,price,instrument_type_id) VALUES
+	 ('Imperdiet Nec Company','fringilla mi',225,53),
+	 ('Eget Massa Suspendisse Associates','sit amet',411,189),
+	 ('Consectetuer Inc.','eget, volutpat',427,67),
+	 ('Ipsum Cursus Institute','erat. Etiam',476,37),
+	 ('Adipiscing Lacus Ut PC','ipsum primis',254,92),
+	 ('A Neque Inc.','augue ac',252,177),
+	 ('Urna Company','tortor. Integer',432,122),
+	 ('Malesuada Institute','facilisi. Sed',392,145),
+	 ('Quis Massa Consulting','commodo ipsum.',315,66),
+	 ('Nibh Dolor Limited','In ornare',326,180);
+INSERT INTO public.lease (start_time,end_time,rentable_instrument_id,person_id) VALUES
+	 ('2023-12-12 00:00:00+01','2023-12-12 01:00:00+01',39,37),
+	 ('2024-06-06 00:00:00+02','2024-06-06 01:00:00+02',22,173),
+	 ('2023-12-05 00:00:00+01','2023-12-05 01:00:00+01',9,138),
+	 ('2025-06-17 00:00:00+02','2025-06-17 01:00:00+02',11,119),
+	 ('2024-01-17 00:00:00+01','2024-01-17 01:00:00+01',23,65),
+	 ('2025-10-15 00:00:00+02','2025-10-15 01:00:00+02',42,88),
+	 ('2023-12-14 00:00:00+01','2023-12-14 01:00:00+01',12,53),
+	 ('2023-12-26 00:00:00+01','2023-12-26 01:00:00+01',26,93),
+	 ('2024-04-21 00:00:00+02','2024-04-21 01:00:00+02',20,49),
+	 ('2025-07-15 00:00:00+02','2025-07-15 01:00:00+02',5,54);
+INSERT INTO public.lease (start_time,end_time,rentable_instrument_id,person_id) VALUES
+	 ('2024-06-08 00:00:00+02','2024-06-08 01:00:00+02',48,162),
+	 ('2025-06-21 00:00:00+02','2025-06-21 01:00:00+02',14,54),
+	 ('2025-01-29 00:00:00+01','2025-01-29 01:00:00+01',17,163),
+	 ('2024-10-05 00:00:00+02','2024-10-05 01:00:00+02',46,53),
+	 ('2024-11-07 00:00:00+01','2024-11-07 01:00:00+01',33,65),
+	 ('2024-01-25 00:00:00+01','2024-01-25 01:00:00+01',21,75),
+	 ('2025-08-02 00:00:00+02','2025-08-02 01:00:00+02',44,162),
+	 ('2024-06-23 00:00:00+02','2024-06-23 01:00:00+02',27,188),
+	 ('2025-10-09 00:00:00+02','2025-10-09 01:00:00+02',13,192),
+	 ('2025-11-09 00:00:00+01','2025-11-09 01:00:00+01',18,26);
+INSERT INTO public.lease (start_time,end_time,rentable_instrument_id,person_id) VALUES
+	 ('2025-06-30 00:00:00+02','2025-06-30 01:00:00+02',24,119),
+	 ('2024-03-10 00:00:00+01','2024-03-10 01:00:00+01',4,161),
+	 ('2025-03-12 00:00:00+01','2025-03-12 01:00:00+01',49,161),
+	 ('2025-04-19 00:00:00+02','2025-04-19 01:00:00+02',7,93),
+	 ('2025-06-13 00:00:00+02','2025-06-13 01:00:00+02',30,173);
+INSERT INTO public.booking (start_date_time,end_date_time,location_id) VALUES
+	 ('2025-09-22 00:00:00+02','2025-09-22 01:00:00+02',1),
+	 ('2025-10-15 00:00:00+02','2025-10-15 01:00:00+02',2),
+	 ('2024-12-17 00:00:00+01','2024-12-17 01:00:00+01',3),
+	 ('2025-08-13 00:00:00+02','2025-08-13 01:00:00+02',4),
+	 ('2024-06-08 00:00:00+02','2024-06-08 01:00:00+02',5),
+	 ('2025-03-01 00:00:00+01','2025-03-01 01:00:00+01',6),
+	 ('2025-05-04 00:00:00+02','2025-05-04 01:00:00+02',7),
+	 ('2024-06-08 00:00:00+02','2024-06-08 01:00:00+02',8),
+	 ('2025-11-09 00:00:00+01','2025-11-09 01:00:00+01',9),
+	 ('2024-11-14 00:00:00+01','2024-11-14 01:00:00+01',10);
+INSERT INTO public.booking (start_date_time,end_date_time,location_id) VALUES
+	 ('2023-12-02 00:00:00+01','2023-12-02 01:00:00+01',11),
+	 ('2024-07-23 00:00:00+02','2024-07-23 01:00:00+02',12),
+	 ('2025-10-22 00:00:00+02','2025-10-22 01:00:00+02',13),
+	 ('2025-05-28 00:00:00+02','2025-05-28 01:00:00+02',14),
+	 ('2025-06-07 00:00:00+02','2025-06-07 01:00:00+02',15),
+	 ('2024-08-02 00:00:00+02','2024-08-02 01:00:00+02',16),
+	 ('2024-11-10 00:00:00+01','2024-11-10 01:00:00+01',17),
+	 ('2024-03-05 00:00:00+01','2024-03-05 01:00:00+01',18),
+	 ('2025-08-08 00:00:00+02','2025-08-08 01:00:00+02',19),
+	 ('2025-04-18 00:00:00+02','2025-04-18 01:00:00+02',20);
+INSERT INTO public.booking (start_date_time,end_date_time,location_id) VALUES
+	 ('2024-08-18 00:00:00+02','2024-08-18 01:00:00+02',21),
+	 ('2025-10-13 00:00:00+02','2025-10-13 01:00:00+02',22),
+	 ('2025-08-03 00:00:00+02','2025-08-03 01:00:00+02',24),
+	 ('2024-06-28 00:00:00+02','2024-06-28 01:00:00+02',26),
+	 ('2025-11-15 00:00:00+01','2025-11-15 01:00:00+01',27),
+	 ('2024-09-26 00:00:00+02','2024-09-26 01:00:00+02',28),
+	 ('2024-04-13 00:00:00+02','2024-04-13 01:00:00+02',31),
+	 ('2025-11-02 00:00:00+01','2025-11-02 01:00:00+01',32),
+	 ('2025-03-28 00:00:00+01','2025-03-28 01:00:00+01',33),
+	 ('2024-03-10 00:00:00+01','2024-03-10 01:00:00+01',34);
+INSERT INTO public.booking (start_date_time,end_date_time,location_id) VALUES
+	 ('2024-02-02 00:00:00+01','2024-02-02 01:00:00+01',35),
+	 ('2024-02-22 00:00:00+01','2024-02-22 01:00:00+01',36),
+	 ('2024-01-10 00:00:00+01','2024-01-10 01:00:00+01',37),
+	 ('2025-09-18 00:00:00+02','2025-09-18 01:00:00+02',38),
+	 ('2025-07-12 00:00:00+02','2025-07-12 01:00:00+02',39),
+	 ('2024-09-27 00:00:00+02','2024-09-27 01:00:00+02',40),
+	 ('2024-12-08 00:00:00+01','2024-12-16 01:00:00+01',29),
+	 ('2024-12-03 00:00:00+01','2024-03-03 01:00:00+01',30),
+	 ('2024-12-09 23:00:00+01','2024-08-10 01:00:00+02',23),
+	 ('2024-12-05 00:00:00+01','2024-02-17 01:00:00+01',25);
+INSERT INTO public.lesson (min,max,pricing_scheme_id,person_id,booking_id) VALUES
+	 (1,1,1,12,1),
+	 (1,1,1,12,2),
+	 (1,1,1,81,3),
+	 (1,1,1,12,4),
+	 (1,1,1,19,5),
+	 (1,1,1,11,6),
+	 (1,1,1,81,7),
+	 (1,1,1,19,9),
+	 (1,1,1,19,10),
+	 (3,6,1,11,11);
+INSERT INTO public.lesson (min,max,pricing_scheme_id,person_id,booking_id) VALUES
+	 (3,6,1,12,12),
+	 (3,6,1,81,13),
+	 (3,6,1,19,14),
+	 (3,6,1,12,15),
+	 (3,6,1,11,16),
+	 (3,6,1,12,18),
+	 (3,6,1,19,19),
+	 (3,6,1,19,20),
+	 (4,8,1,19,21),
+	 (4,8,1,81,22);
+INSERT INTO public.lesson (min,max,pricing_scheme_id,person_id,booking_id) VALUES
+	 (4,8,1,11,23),
+	 (4,8,1,81,24),
+	 (4,8,1,12,25),
+	 (4,8,1,81,26),
+	 (1,1,2,11,8),
+	 (3,6,2,81,17),
+	 (4,8,2,81,28),
+	 (4,8,1,NULL,27),
+	 (4,8,1,NULL,29),
+	 (4,8,1,NULL,30);
+INSERT INTO public.ensemble (lesson_id,genre_id) VALUES
+	 (21,1),
+	 (22,2),
+	 (23,3),
+	 (24,3),
+	 (25,3),
+	 (26,3),
+	 (27,4),
+	 (28,2),
+	 (29,4),
+	 (30,4);
+INSERT INTO public.instrument_lesson (lesson_id,skill_level_id,instrument_type_id) VALUES
+	 (1,3,191),
+	 (2,2,79),
+	 (3,5,184),
+	 (4,4,116),
+	 (5,5,16),
+	 (6,5,190),
+	 (7,5,109),
+	 (8,5,59),
+	 (9,1,130),
+	 (10,3,190);
+INSERT INTO public.instrument_lesson (lesson_id,skill_level_id,instrument_type_id) VALUES
+	 (11,4,45),
+	 (12,5,118),
+	 (13,5,144),
+	 (14,2,139),
+	 (15,3,71),
+	 (16,2,166),
+	 (17,2,163),
+	 (18,5,52),
+	 (19,2,104),
+	 (20,5,17);
+INSERT INTO public.enrollment (lesson_id,person_id) VALUES
+	 (3,3),
+	 (16,76),
+	 (16,53),
+	 (26,49),
+	 (26,75),
+	 (26,20),
+	 (26,161),
+	 (26,26),
+	 (26,139),
+	 (25,26);
+INSERT INTO public.enrollment (lesson_id,person_id) VALUES
+	 (30,26),
+	 (30,49),
+	 (30,75),
+	 (30,20),
+	 (30,161),
+	 (30,139),
+	 (25,49),
+	 (25,75),
+	 (25,20),
+	 (25,161);
+INSERT INTO public.enrollment (lesson_id,person_id) VALUES
+	 (25,139),
+	 (25,76),
+	 (25,3);
